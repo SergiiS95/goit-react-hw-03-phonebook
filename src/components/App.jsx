@@ -1,3 +1,5 @@
+
+import React from 'react';
 import { Component } from 'react';
 import { nanoid } from 'nanoid';
 import { ContactForm } from './ContactForm/ContactForm';
@@ -8,12 +10,7 @@ import css from './App.module.css';
 
 export class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
 
@@ -24,16 +21,15 @@ export class App extends Component {
     if (isExist) {
       alert(`${contactData.name} is already in contacts.`);
       return;
-    } 
+    }
 
-      const finalContact = {
-        id: nanoid(3),
-        ...contactData,
-      };
-      this.setState(prevState => ({
-        contacts: [finalContact, ...prevState.contacts],
-      }));
-    
+    const finalContact = {
+      id: nanoid(3),
+      ...contactData,
+    };
+    this.setState(prevState => ({
+      contacts: [finalContact, ...prevState.contacts],
+    }));
   };
 
   handleFilter = e => {
@@ -52,6 +48,23 @@ export class App extends Component {
       name.toLowerCase().includes(filter.toLowerCase())
     );
   };
+
+  componentDidMount() {
+    console.log("render componentdidmount")
+    const stringifiedContacts = localStorage.getItem('contacts');
+    const contacts = JSON.parse(stringifiedContacts) ?? [];
+    this.setState({ contacts });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+
+    console.log('render componentDidUpdate');
+    if (prevState.contacts.length !== this.state.contacts.length) {
+      const stringifiedContacts = JSON.stringify(this.state.contacts);
+      localStorage.setItem('contacts', stringifiedContacts);
+    }
+  }
+
   render() {
     return (
       <div className={css.container}>
